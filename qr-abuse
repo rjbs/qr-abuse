@@ -8,13 +8,9 @@ package Insane {
                fallback => 1;
 };
 
-for (0, 1) {
-  no if $_, 'overloading';
-
+my $code = q[
   my $wtf = qr{bcd};
   bless $wtf, 'Insane';
-
-  diag "overloading: $_";
 
   say "blessed: ", blessed $wtf;
   say "reftype: ", reftype $wtf;
@@ -39,7 +35,16 @@ for (0, 1) {
   diag '=~ "$wtf"';
   say 'abc'  =~ "$wtf"   ? 1 : 0;
   say 'bcd'  =~ "$wtf"   ? 1 : 0;
+];
+
+for my $no_overloading (0, 1) {
+  my $copy = $code;
+  $copy = "no overloading; $code" if $no_overloading;
+
+  diag $no_overloading ? 'no overloading' : 'overloading';
+  eval $copy;
 }
+
 
 ok(1);
 done_testing;
